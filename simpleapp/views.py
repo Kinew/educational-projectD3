@@ -1,19 +1,52 @@
-from django.shortcuts import render
-# Импортируем класс, который говорит нам о том,
-# что в этом представлении мы будем выводить список объектов из БД
-from django.views.generic import ListView
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.urls import reverse_lazy
+from django.views.generic import (
+    ListView, DetailView, CreateView, UpdateView, DeleteView
+)
+
+from .filters import ProductFilter
+from .forms import ProductForm
 from .models import Product
 
 
 class ProductsList(ListView):
-    # Указываем модель, объекты которой мы будем выводить
     model = Product
-    # Поле, которое будет использоваться для сортировки объектов
     ordering = 'name'
-    # Указываем имя шаблона, в котором будут все инструкции о том,
-    # как именно пользователю должны быть показаны наши объекты
     template_name = 'products.html'
-    # Это имя списка, в котором будут лежать все объекты.
-    # Его надо указать, чтобы обратиться к списку объектов в html-шаблоне.
     context_object_name = 'products'
-# Create your views here.
+    paginate_by = 2
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        self.filterset = ProductFilter(self.request.GET, queryset)
+        return self.filterset.qs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['filterset'] = self.filterset
+        return context
+
+
+class ProductDetail(DetailView):
+    model = Product
+    template_name = 'product.html'
+    context_object_name = 'product'
+
+
+class ProductCreate(CreateView):
+    raise_exception = True
+    form_class = ProductForm
+    model = Product
+    template_name = 'product_edit.html'
+
+
+class ProductUpdate(UpdateView):
+    form_class = ProductForm
+    model = Product
+    template_name = 'product_edit.html'
+
+# Представление удаляющее товар.
+class ProductDelete(DeleteView):
+    model = Product
+    template_name = 'product_delete.html'
+    success_url = reverse_lazy('product_list')
