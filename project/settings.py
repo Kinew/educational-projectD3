@@ -45,8 +45,7 @@ INSTALLED_APPS = [
     'django.contrib.flatpages',
     'simpleapp',
     'project',
-    'account',
-    'accountdjango_filters',
+    'accounts',
     'django_filters',
     'allauth',
     'allauth.account',
@@ -66,7 +65,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware'
+    'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware',
     'allauth.account.middleware.AccountMiddleware',
 ]
 
@@ -164,3 +163,11 @@ STATICFILES_DIRS = [
 ]
 
 LOGIN_REDIRECT_URL = "/products"
+
+
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_UNIQUE_EMAIL = True
+ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
+ACCOUNT_EMAIL_VERIFICATION = 'none'
+ACCOUNT_FORMS = {"signup": "accounts.forms.CustomSignupForm"}
